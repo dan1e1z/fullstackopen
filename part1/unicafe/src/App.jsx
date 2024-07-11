@@ -40,12 +40,20 @@ const App = () => {
       <Button handleClick={() => setNeutral(neutral + 1)} text="neutral" />
       <Button handleClick={() => setBad(bad + 1)} text="bad" />
       <Header text="statistics" />
-      <Statistics text="good " state={good} />
-      <Statistics text="neutral " state={neutral} />
-      <Statistics text="bad " state={bad} />
-      <Statistics text="all " state={all} />
-      <Statistics text="average " state={average} />
-      <Statistics text="positive " state={positive} />
+      {!isNaN(average) ? (
+        <>
+          <Statistics text="good " state={good} />
+          <Statistics text="neutral " state={neutral} />
+          <Statistics text="bad " state={bad} />
+          <Statistics text="all " state={all} />
+          <Statistics text="average " state={average} />
+          <Statistics text="positive " state={positive} />
+        </>
+      ) : (
+        <>
+          <p>No feedback given</p>
+        </>
+      )}
     </div>
   );
 };
