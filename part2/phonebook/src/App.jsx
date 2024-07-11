@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import personService from "./services/persondb";
+import "./styles.css";
 
 const PersonForm = ({
   addPerson,
@@ -32,12 +33,12 @@ const PersonForm = ({
   );
 };
 
-const Notification = ({ message }) => {
+const Notification = ({ message, error }) => {
   if (message === null) {
     return null;
   }
 
-  return <div className="error">{message}</div>;
+  return <div className={error ? "error" : "noError"}>{message}</div>;
 };
 
 const PhoneList = ({ people, filterText, handlePersonDelete }) => {
@@ -70,11 +71,11 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
   const [notificationMessage, setNotificationMessage] = useState("");
+  const [error, setError] = useState(false);
 
   const addPerson = (event) => {
     event.preventDefault();
 
-    // send to backend
     const newPerson = {
       name: newName,
       number: newNumber,
@@ -105,9 +106,17 @@ const App = () => {
             setTimeout(() => {
               setNotificationMessage(null);
             }, 2000);
+            setError(false);
           })
           .catch((error) => {
             console.error("Error updating person:", error);
+            setNotificationMessage(
+              `Information of ${newPerson.name} has already been removed from server `,
+            );
+            setTimeout(() => {
+              setNotificationMessage(null);
+            }, 2000);
+            setError(true);
           });
       }
       return;
@@ -123,6 +132,7 @@ const App = () => {
         setTimeout(() => {
           setNotificationMessage(null);
         }, 2000);
+        setError(false);
       })
       .catch((error) => {
         console.error("Error adding person:", error);
@@ -130,20 +140,29 @@ const App = () => {
   };
 
   const handlePersonDelete = (id) => {
-    if (
-      !window.confirm(
-        `Delete ${persons.find((person) => person.id === id).name} ?`,
-      )
-    ) {
+    const personToDelete = persons.find((person) => person.id === id);
+    if (!window.confirm(`Delete ${personToDelete.name} ?`)) {
       return;
     }
     personService
       .remove(id)
       .then(() => {
         setPersons(persons.filter((person) => person.id !== id)); // Update state after deletion
+        setNotificationMessage(`Deleted ${personToDelete.name}`);
+        setTimeout(() => {
+          setNotificationMessage(null);
+        }, 2000);
+        setError(false);
       })
       .catch((error) => {
         console.log("Error removing person:", error);
+        setNotificationMessage(
+          `Error deleting ${personToDelete.name} from server`,
+        );
+        setTimeout(() => {
+          setNotificationMessage(null);
+        }, 2000);
+        setError(true);
       });
   };
 
@@ -162,7 +181,9 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      {notificationMessage && <Notification message={notificationMessage} />}
+      {notificationMessage && (
+        <Notification message={notificationMessage} error={error} />
+      )}
       <PersonForm
         addPerson={addPerson}
         newName={newName}
