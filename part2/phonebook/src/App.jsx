@@ -32,6 +32,14 @@ const PersonForm = ({
   );
 };
 
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null;
+  }
+
+  return <div className="error">{message}</div>;
+};
+
 const PhoneList = ({ people, filterText, handlePersonDelete }) => {
   const filteredPeople = people.filter((person) =>
     person.name.toLowerCase().includes(filterText.toLowerCase()),
@@ -61,6 +69,7 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
+  const [notificationMessage, setNotificationMessage] = useState("");
 
   const addPerson = (event) => {
     event.preventDefault();
@@ -92,6 +101,10 @@ const App = () => {
             );
             setNewName("");
             setNewNumber("");
+            setNotificationMessage(`Updated ${newPerson.name} number`);
+            setTimeout(() => {
+              setNotificationMessage(null);
+            }, 2000);
           })
           .catch((error) => {
             console.error("Error updating person:", error);
@@ -106,6 +119,10 @@ const App = () => {
         setPersons(persons.concat(addedPerson));
         setNewName("");
         setNewNumber("");
+        setNotificationMessage(`Added ${newPerson.name}`);
+        setTimeout(() => {
+          setNotificationMessage(null);
+        }, 2000);
       })
       .catch((error) => {
         console.error("Error adding person:", error);
@@ -145,6 +162,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      {notificationMessage && <Notification message={notificationMessage} />}
       <PersonForm
         addPerson={addPerson}
         newName={newName}
