@@ -56,7 +56,9 @@ const App = () => {
       <Button text="vote" handleClick={() => handleVote()} />
       <Button text="next anecdote" handleClick={() => handleSelected()} />
       <h1>Anecdote with most votes</h1>
-      <Leaderboard anecdotes={anecdotes} maxVotes={maxVotes} />
+      {maxVotes[0] > 0 && (
+        <Leaderboard anecdotes={anecdotes} maxVotes={maxVotes} />
+      )}
     </div>
   );
 };
