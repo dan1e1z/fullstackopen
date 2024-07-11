@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import personService from "./services/persondb";
 
 const PersonForm = ({
   addPerson,
@@ -52,12 +52,9 @@ const App = () => {
   const [persons, setPersons] = useState([]);
 
   useEffect(() => {
-    const eventHandler = (response) => {
-      setPersons(response.data);
-    };
-
-    const promise = axios.get("http://localhost:3001/persons");
-    promise.then(eventHandler);
+    personService.getAll().then((personData) => {
+      setPersons(personData);
+    });
   }, []); // [] means, runs after initial render, [count] effect runs on that dependencies changes
 
   const [newName, setNewName] = useState("");
@@ -78,10 +75,10 @@ const App = () => {
       id: `${persons.length}`,
     };
 
-    axios
-      .post("http://localhost:3001/persons", newPerson)
-      .then((response) => {
-        setPersons(persons.concat(response.data));
+    personService
+      .create(newPerson)
+      .then((addedPerson) => {
+        setPersons(persons.concat(addedPerson));
         setNewName("");
         setNewNumber("");
       })
