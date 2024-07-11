@@ -7,6 +7,10 @@ const Content = ({ parts }) => {
           {part.name} {part.exercises}
         </p>
       ))}
+      <strong>
+        total of {parts.reduce((total, part) => total + part.exercises, 0)}{" "}
+        exercises
+      </strong>
     </div>
   );
 };
@@ -44,6 +48,11 @@ const App = () => {
         name: "State of a component",
         exercises: 14,
         id: 3,
+      },
+      {
+        name: "Redux",
+        exercises: 11,
+        id: 4,
       },
     ],
   };
