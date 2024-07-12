@@ -1,6 +1,36 @@
 import React, { useState, useEffect } from "react";
 import CountryService from "./services/countrydb";
+import WeatherService from "./services/weatherdb";
 import "./styles.css";
+
+const Weather = ({ country }) => {
+  const [weather, setWeather] = useState(null);
+
+  useEffect(() => {
+    WeatherService.getWeather(country).then((weatherData) => {
+      setWeather(weatherData);
+    });
+  }, [country]);
+
+  if (!weather) {
+    return <p>Loading weather...</p>;
+  }
+  console.log(weather);
+
+  const weather_icon = weather.weather[0].icon;
+
+  return (
+    <div>
+      <h2>Weather in {country.name.common}</h2>
+      <p>temperature {(weather.main.temp - 273.15).toFixed(2)} Celcius</p>
+      <img
+        src={`https://openweathermap.org/img/wn/${weather_icon}@2x.png`}
+        alt="Weather icon"
+      />
+      <p>wind {weather.wind.speed} m/s</p>
+    </div>
+  );
+};
 
 const CountryInfo = ({ country }) => {
   if (!country) {
@@ -19,6 +49,7 @@ const CountryInfo = ({ country }) => {
         ))}
       </ul>
       <img src={country.flags.png} alt="Flag" />
+      <Weather country={country} />
     </div>
   );
 };
@@ -74,14 +105,18 @@ function App() {
         Find countries:
         <input value={newFilter} onChange={handleNewFilter} />
       </form>
-      {selectedCountry ? (
-        <CountryInfo country={selectedCountry} />
-      ) : (
-        <CountryList
-          filterText={newFilter}
-          countryList={countryList}
-          handleCountrySelect={handleCountrySelect}
-        />
+      {newFilter !== "" && (
+        <>
+          {selectedCountry ? (
+            <CountryInfo country={selectedCountry} />
+          ) : (
+            <CountryList
+              filterText={newFilter}
+              countryList={countryList}
+              handleCountrySelect={handleCountrySelect}
+            />
+          )}
+        </>
       )}
     </div>
   );
