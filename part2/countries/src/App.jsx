@@ -1,40 +1,47 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import CountryService from "./services/countrydb";
+import "./styles.css";
 
 const CountryInfo = ({ country }) => {
-  console.log(country);
-  console.log(country.languages);
+  if (!country) {
+    return null;
+  }
+
   return (
     <div>
       <h1>{country.name.common}</h1>
-      <p>capital {country.capital}</p>
-      <p>area {country.area}</p>
-      <h3>languages:</h3>
+      <p>Capital: {country.capital}</p>
+      <p>Area: {country.area} km²</p>
+      <h3>Languages:</h3>
       <ul>
-        {Object.values(country.languages).map((value, index) => (
-          <li key={index}>{value}</li>
+        {Object.values(country.languages).map((language, index) => (
+          <li key={index}>{language}</li>
         ))}
       </ul>
-      <img src={country.flags.png}></img>
+      <img src={country.flags.png} alt="Flag" />
     </div>
   );
 };
 
-const CountryList = ({ filterText, countryList }) => {
+const CountryList = ({ filterText, countryList, handleCountrySelect }) => {
   const filteredCountryList = countryList.filter((country) =>
     country.name.common.toLowerCase().includes(filterText.toLowerCase()),
   );
+
+  if (filteredCountryList.length === 1) {
+    return <CountryInfo country={filteredCountryList[0]} />;
+  }
+
   return (
     <div>
       {filteredCountryList.length > 10 ? (
         <div>Too many matches, specify another filter</div>
-      ) : filteredCountryList.length === 1 ? (
-        <div>
-          <CountryInfo country={filteredCountryList[0]} />
-        </div>
       ) : (
         filteredCountryList.map((country) => (
-          <div key={country.name.common}>{country.name.common}</div>
+          <div className="countryInfoField" key={country.name.common}>
+            <div>{country.name.common}</div>
+            <button onClick={() => handleCountrySelect(country)}>Show</button>
+          </div>
         ))
       )}
     </div>
@@ -44,6 +51,7 @@ const CountryList = ({ filterText, countryList }) => {
 function App() {
   const [newFilter, setNewFilter] = useState("");
   const [countryList, setCountryList] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState(null);
 
   useEffect(() => {
     CountryService.getAll().then((countryData) => {
@@ -53,15 +61,28 @@ function App() {
 
   const handleNewFilter = (event) => {
     setNewFilter(event.target.value);
+    setSelectedCountry(null);
+  };
+
+  const handleCountrySelect = (country) => {
+    setSelectedCountry(country);
   };
 
   return (
     <div>
       <form>
-        find countries
+        Find countries:
         <input value={newFilter} onChange={handleNewFilter} />
-        <CountryList filterText={newFilter} countryList={countryList} />
       </form>
+      {selectedCountry ? (
+        <CountryInfo country={selectedCountry} />
+      ) : (
+        <CountryList
+          filterText={newFilter}
+          countryList={countryList}
+          handleCountrySelect={handleCountrySelect}
+        />
+      )}
     </div>
   );
 }
