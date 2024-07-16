@@ -36,6 +36,14 @@ const generateId = () => {
 //   response.send("<h1>Hello World!</h1>");
 // });
 
+app.get("/info", (request, response) => {
+  const numberOfPersons = persons.length;
+  const date = new Date();
+  response.send(`
+    <div>Phonebook has info for ${numberOfPersons} people</div>
+    <div>${date}</div>`);
+});
+
 app.get("/api/persons", (request, response) => {
   response.json(persons);
 });
