@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+app.use(express.json());
 
 let persons = [
   {
@@ -32,10 +33,6 @@ const generateId = () => {
   return String(id);
 };
 
-// app.get("/", (request, response) => {
-//   response.send("<h1>Hello World!</h1>");
-// });
-
 app.get("/info", (request, response) => {
   const numberOfPersons = persons.length;
   const date = new Date();
@@ -46,6 +43,40 @@ app.get("/info", (request, response) => {
 
 app.get("/api/persons", (request, response) => {
   response.json(persons);
+});
+
+app.post("/api/persons", (request, response) => {
+  const body = request.body;
+  console.log(body);
+  console.log(body.name);
+  // no name
+  if (!body.name) {
+    return response.status(400).json({ error: "missing name" });
+  }
+  // no number
+  if (!body.number) {
+    return response.status(400).json({ error: "missing number" });
+  }
+
+  // no unqiue name
+  const uniquePerson = persons.find(
+    (person) => person.name.toLowerCase() === body.name.toLowerCase(),
+  );
+  if (uniquePerson) {
+    return response.status(400).json({ error: "name must be unique" });
+  }
+
+  // create new person object
+  const newPerson = {
+    name: body.name,
+    number: body.number,
+    id: generateId(),
+  };
+
+  persons = persons.concat(newPerson);
+
+  console.log(newPerson);
+  response.json(newPerson);
 });
 
 app.get("/api/persons/:id", (request, response) => {
