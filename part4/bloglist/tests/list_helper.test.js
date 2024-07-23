@@ -129,4 +129,12 @@ describe("Most frequient author", () => {
     const result = listHelper.mostBlogs(blogs);
     assert.deepStrictEqual(answer, result);
   });
+  test("Most Likes", () => {
+    const answer = {
+      author: "Edsger W. Dijkstra",
+      likes: 17,
+    };
+    const result = listHelper.mostLikes(blogs);
+    assert.deepStrictEqual(answer, result);
+  });
 });
