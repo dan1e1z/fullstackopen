@@ -122,3 +122,11 @@ describe("Favorite Blog", () => {
     assert.deepStrictEqual(answer, result);
   });
 });
+
+describe("Most frequient author", () => {
+  test("Most Blogs", () => {
+    const answer = { author: "Robert C. Martin", blogs: 3 };
+    const result = listHelper.mostBlogs(blogs);
+    assert.deepStrictEqual(answer, result);
+  });
+});
