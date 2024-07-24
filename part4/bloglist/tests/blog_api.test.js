@@ -61,26 +61,48 @@ beforeEach(async () => {
   );
 });
 
-  test("blogs are returned as json", async () => {
-    await api
-      .get("/api/blogs")
-      .expect(200)
-      .expect("Content-Type", /application\/json/);
-  });
-  test("there are two notes", async () => {
-    const response = await api.get("/api/blogs");
-    assert.strictEqual(response.body.length, initialBlogs.length);
-  });
+test("blogs are returned as json", async () => {
+  await api
+    .get("/api/blogs")
+    .expect(200)
+    .expect("Content-Type", /application\/json/);
+});
+test("there are two notes", async () => {
+  const response = await api.get("/api/blogs");
+  assert.strictEqual(response.body.length, initialBlogs.length);
+});
 
-  test("unique identifier property of the blog posts is named id", async () => {
-    const response = await api.get("/api/blogs");
-    const blogs = response.body;
+test("unique identifier property of the blog posts is named id", async () => {
+  const response = await api.get("/api/blogs");
+  const blogs = response.body;
 
-    blogs.forEach((blog) => {
-      assert(blog.id !== undefined, "Blog should have an id property");
-      assert(blog._id === undefined, "Blog should not have an _id property");
-    });
+  blogs.forEach((blog) => {
+    assert(blog.id !== undefined, "Blog should have an id property");
+    assert(blog._id === undefined, "Blog should not have an _id property");
   });
+});
+
+test("a valid blog can be added", async () => {
+  const newBlog = {
+    title: "New Blog",
+    author: "John Doe",
+    url: "http://example.com",
+    likes: 10,
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(newBlog)
+    .expect(200)
+    .expect("Content-Type", /application\/json/);
+
+  const response = await api.get("/api/blogs");
+  const blogs = response.body;
+
+  assert.strictEqual(blogs.length, initialBlogs.length + 1);
+  const titles = blogs.map((blog) => blog.title);
+  assert(titles.includes(newBlog.title), "New Blog");
+});
 
 after(async () => {
   await mongoose.connection.close();
