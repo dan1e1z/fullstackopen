@@ -130,6 +130,35 @@ test("if the likes property is missing, it will default to 0", async () => {
   );
 });
 
+test("blog without title is not added", async () => {
+  const newBlog = {
+    author: "New Blog Author",
+    url: "URL",
+    likes: 5,
+  };
+  const response = await api.post("/api/blogs").send(newBlog).expect(400);
+
+  assert.strictEqual(
+    response.body.error,
+    "Blog validation failed: title: Path `title` is required.",
+  );
+});
+
+test("blog without url is not added", async () => {
+  const newBlog = {
+    title: "New Blog Title",
+    author: "New Blog Author",
+    likes: 5,
+  };
+
+  const response = await api.post("/api/blogs").send(newBlog).expect(400);
+
+  assert.strictEqual(
+    response.body.error,
+    "Blog validation failed: url: Path `url` is required.",
+  );
+});
+
 after(async () => {
   await mongoose.connection.close();
 });
