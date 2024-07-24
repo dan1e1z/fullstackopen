@@ -159,6 +159,39 @@ test("blog without url is not added", async () => {
   );
 });
 
+test("deleting a single blog post", async () => {
+  // Get all blogs
+  let response = await api.get("/api/blogs");
+  // console.log("response body", response.body);
+  const blogsAtStart = response.body;
+  const blogToDelete = blogsAtStart[0];
+
+  await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+});
+
+test("updating the likes of a single blog post", async () => {
+  // Get all blogs
+  let response = await api.get("/api/blogs");
+  // console.log("response body", response.body);
+  const blogs = response.body;
+  const blogToUpdate = blogs[0];
+
+  // Prepare updated blog data
+  const updatedBlogData = {
+    title: blogToUpdate.title,
+    author: blogToUpdate.author,
+    url: blogToUpdate.url,
+    likes: blogToUpdate.likes + 1,
+  };
+
+  // Send PUT request to update the blog
+  response = await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(updatedBlogData)
+    .expect(200)
+    .expect("Content-Type", /application\/json/);
+});
+
 after(async () => {
   await mongoose.connection.close();
 });
