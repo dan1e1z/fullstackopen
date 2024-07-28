@@ -1,0 +1,25 @@
+POST http://localhost:3001/api/users
+accept: application/json
+content-type: application/json
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5c2VybmFtZSI6Im1sdXVra2FpIiwiaW
+
+{
+    "username": "root",
+    "name": "root",
+    "password": "root"
+}
+
+###
+
+POST http://localhost:3001/api/login
+accept: application/json
+content-type: application/json
+authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5c2VybmFtZSI6Im1sdXVra2FpIiwiaW
+
+{
+    "username": "root",
+    "password": "root"
+}
+
+
+
