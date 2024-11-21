@@ -64,6 +64,30 @@ const App = () => {
     }
   };
 
+  const updateBlog = async (blogObject) => {
+    try {
+      await blogService.update(blogObject.id, blogObject);
+      setBlogs((blogs) =>
+        blogs.map((blog) => (blog.id === blogObject.id ? blogObject : blog)),
+      );
+    } catch (error) {
+      setMessage(error.response.data.error);
+      setMessageType("error");
+      setTimeout(() => setMessage(null), 5000);
+    }
+  };
+
+  const removeBlog = async (id) => {
+    try {
+      await blogService.remove(id);
+      setBlogs((blogs) => blogs.filter((blog) => blog.id !== id));
+    } catch (error) {
+      setMessage(error.response.data.error);
+      setMessageType("error");
+      setTimeout(() => setMessage(null), 5000);
+    }
+  };
+
   const handleLogout = () => {
     window.localStorage.removeItem("loggedBlogAppUser");
     setUser(null);
@@ -113,9 +137,17 @@ const App = () => {
           <Togglable buttonLabel="New Blog" ref={blogFormRef}>
             <BlogForm createBlog={createBlog} />
           </Togglable>
-          {blogs.map((blog) => (
-            <Blog key={blog.id} blog={blog} />
-          ))}
+          {blogs
+            .slice()
+            .sort((a, b) => b.likes - a.likes)
+            .map((blog) => (
+              <Blog
+                key={blog.id}
+                blog={blog}
+                updateBlog={updateBlog}
+                removeBlog={removeBlog}
+              />
+            ))}
         </div>
       )}
     </div>
