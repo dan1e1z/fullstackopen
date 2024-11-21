@@ -1,10 +1,20 @@
 const mongoose = require("mongoose");
+const config = require("../utils/config");
+const url = config.MONGODB_URI;
 
 const blogSchema = new mongoose.Schema({
-  title: { type: String, required: true },
+  url: String,
+  title: {
+    type: String,
+    required: true,
+    minlength: 5,
+  },
   author: String,
-  url: { type: String, required: true },
-  likes: { type: Number, default: 0 },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+  likes: Number,
 });
 
 blogSchema.set("toJSON", {
@@ -13,6 +23,10 @@ blogSchema.set("toJSON", {
     delete returnedObject._id;
     delete returnedObject.__v;
   },
+});
+
+mongoose.connect(url, {
+  serverSelectionTimeoutMS: 100000000,
 });
 
 module.exports = mongoose.model("Blog", blogSchema);
