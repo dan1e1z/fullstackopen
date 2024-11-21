@@ -78,6 +78,15 @@ const App = () => {
   };
 
   const removeBlog = async (id) => {
+    const blogToRemove = blogs.find((blog) => blog.id === id);
+
+    if (
+      !window.confirm(
+        `Remove Blog: ${blogToRemove.title} by ${blogToRemove.author}?`,
+      )
+    ) {
+      return;
+    }
     try {
       await blogService.remove(id);
       setBlogs((blogs) => blogs.filter((blog) => blog.id !== id));
