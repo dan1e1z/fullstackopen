@@ -8,15 +8,22 @@ const App = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-  const [notification, setNotification] = useState({ message: null, type: "" });
   const [newBlog, setNewBlog] = useState({ title: "", author: "", url: "" });
+  const [notification, setNotification] = useState({ message: null, type: "" });
 
-  // Fetch blogs on mount
   useEffect(() => {
     blogService.getAll().then(setBlogs);
   }, []);
 
-  // Handle login
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem("loggedBlogAppUser");
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON);
+      setUser(user);
+      blogService.setToken(user.token);
+    }
+  }, []);
+
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
@@ -32,7 +39,6 @@ const App = () => {
     }
   };
 
-  // Handle blog creation
   const addBlog = async (event) => {
     event.preventDefault();
     const { title, author, url } = newBlog;
@@ -43,19 +49,21 @@ const App = () => {
     }
 
     try {
-      const createdBlog = await blogService.create({ title, author, url });
-      setBlogs((prevBlogs) => [...prevBlogs, createdBlog]);
+      const createdBlog = await blogService.create(newBlog);
+      setBlogs(blogs.concat(createdBlog));
       setNewBlog({ title: "", author: "", url: "" });
-      showNotification(`A new blog "${title}" by ${author} added`, "success");
+      showNotification(
+        `A new blog "${createdBlog.title}" by ${createdBlog.author} added`,
+        "success",
+      );
     } catch (error) {
       showNotification(
-        error?.response?.data?.error || "An error occurred",
+        error.response?.data?.error || "An error occurred",
         "error",
       );
     }
   };
 
-  // Handle logout
   const handleLogout = () => {
     window.localStorage.clear();
     setUser(null);
@@ -63,19 +71,18 @@ const App = () => {
     showNotification("Logged out successfully", "success");
   };
 
-  // Show notification helper
   const showNotification = (message, type) => {
     setNotification({ message, type });
     setTimeout(() => setNotification({ message: null, type: "" }), 5000);
   };
 
-  // Controlled input handlers for blog form
   const handleInputChange = ({ target }) => {
     setNewBlog((prev) => ({ ...prev, [target.name]: target.value }));
   };
 
   return (
     <div>
+      <h2>Blogs</h2>
       <Notification message={notification.message} type={notification.type} />
       {user ? (
         <LoggedInView
@@ -87,7 +94,7 @@ const App = () => {
           addBlog={addBlog}
         />
       ) : (
-        <LoginView
+        <LoginForm
           username={username}
           password={password}
           setUsername={setUsername}
@@ -104,7 +111,7 @@ const Notification = ({ message, type }) => {
   return <div className={`notification ${type}`}>{message}</div>;
 };
 
-const LoginView = ({
+const LoginForm = ({
   username,
   password,
   setUsername,
@@ -146,15 +153,16 @@ const LoggedInView = ({
   addBlog,
 }) => (
   <div>
-    <h2>Blogs</h2>
     <p>
       {user.name} logged in <button onClick={handleLogout}>Logout</button>
     </p>
+    <h2>Create New Blog</h2>
     <BlogForm
       newBlog={newBlog}
       handleInputChange={handleInputChange}
       addBlog={addBlog}
     />
+    <h2>Existing Blogs</h2>
     {blogs.map((blog) => (
       <Blog key={blog.id} blog={blog} />
     ))}
