@@ -1,0 +1,14 @@
+{
+  "anecdotes": [
+    {
+      "content": "Redux Test",
+      "id": "3333",
+      "votes": 3
+    },
+    {
+      "id": "1033",
+      "content": "da",
+      "votes": 4
+    }
+  ]
+}
