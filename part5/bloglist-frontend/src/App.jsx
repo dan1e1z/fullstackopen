@@ -71,29 +71,28 @@ const App = () => {
         blogs.map((blog) => (blog.id === blogObject.id ? blogObject : blog)),
       );
     } catch (error) {
-      setMessage(error.response.data.error);
-      setMessageType("error");
-      setTimeout(() => setMessage(null), 5000);
+      setErrorMessage(error.response.data.error);
+      setErrorMessageType("error");
+      setTimeout(() => setErrorMessage(null), 5000);
     }
   };
 
   const removeBlog = async (id) => {
-    const blogToRemove = blogs.find((blog) => blog.id === id);
-
-    if (
-      !window.confirm(
-        `Remove Blog: ${blogToRemove.title} by ${blogToRemove.author}?`,
-      )
-    ) {
-      return;
-    }
+    // const blogToRemove = blogs.find((blog) => blog.id === id);
+    // if (
+    //   !window.confirm(
+    //     `Remove Blog: ${blogToRemove.title} by ${blogToRemove.author}?`,
+    //   )
+    // ) {
+    //   return;
+    // }
     try {
       await blogService.remove(id);
       setBlogs((blogs) => blogs.filter((blog) => blog.id !== id));
     } catch (error) {
-      setMessage(error.response.data.error);
-      setMessageType("error");
-      setTimeout(() => setMessage(null), 5000);
+      setErrorMessage(error.response.data.error);
+      setErrorMessageType("error");
+      setTimeout(() => setErrorMessage(null), 5000);
     }
   };
 
