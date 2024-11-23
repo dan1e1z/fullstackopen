@@ -1,4 +1,4 @@
-interface Exercise {
+export interface Exercise {
   periodLength: number;
   trainingDays: number;
   success: boolean;
@@ -8,7 +8,7 @@ interface Exercise {
   average: number;
 }
 
-const calculateExercises = (
+export const calculateExercises = (
   dailyExerciseHours: number[],
   target: number,
 ): Exercise => {
@@ -43,16 +43,18 @@ const calculateExercises = (
   };
 };
 
-const args: number[] = process.argv.slice(2).map(Number);
-const target: number = args[0];
-const dailyExerciseHours: number[] = args.slice(1);
+if (require.main === module) {
+  const args: number[] = process.argv.slice(2).map(Number);
+  const target: number = args[0];
+  const dailyExerciseHours: number[] = args.slice(1);
 
-if (!target || dailyExerciseHours.some(isNaN)) {
-  console.error(
-    "Please provide a valid target followed by daily exercise hours. Example: npm run calculateExercises 2 1 0 2 4.5 0 3 1 0 4",
-  );
-  process.exit(1);
+  if (!target || dailyExerciseHours.some(isNaN)) {
+    console.error(
+      "Please provide a valid target followed by daily exercise hours. Example: npm run calculateExercises 2 1 0 2 4.5 0 3 1 0 4",
+    );
+    process.exit(1);
+  }
+
+  const result: Exercise = calculateExercises(dailyExerciseHours, target);
+  console.log(result);
 }
-
-const result: Exercise = calculateExercises(dailyExerciseHours, target);
-console.log(result);
