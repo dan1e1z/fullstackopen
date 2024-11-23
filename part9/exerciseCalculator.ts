@@ -43,9 +43,9 @@ const calculateExercises = (
   };
 };
 
-const args = process.argv.slice(2).map(Number);
-const target = args[0];
-const dailyExerciseHours = args.slice(1);
+const args: number[] = process.argv.slice(2).map(Number);
+const target: number = args[0];
+const dailyExerciseHours: number[] = args.slice(1);
 
 if (!target || dailyExerciseHours.some(isNaN)) {
   console.error(
@@ -54,5 +54,5 @@ if (!target || dailyExerciseHours.some(isNaN)) {
   process.exit(1);
 }
 
-const result = calculateExercises(dailyExerciseHours, target);
+const result: Exercise = calculateExercises(dailyExerciseHours, target);
 console.log(result);
