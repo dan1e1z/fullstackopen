@@ -6,11 +6,11 @@ import { getAllDiaries, createDiary } from "./diaryService";
 
 function App() {
   const [diaries, setDiaries] = useState<DiaryEntry[]>([]);
-  const [date, setDate] = useState("");
-  const [visibility, setVisibility] = useState("");
-  const [weather, setWeather] = useState("");
-  const [comment, setComment] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [date, setDate] = useState<string>("");
+  const [visibility, setVisibility] = useState<Visibility | "">("");
+  const [weather, setWeather] = useState<Weather | "">("");
+  const [comment, setComment] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   useEffect(() => {
     getAllDiaries().then((data) => {
@@ -18,59 +18,96 @@ function App() {
     });
   }, []);
 
-  console.log(diaries);
-
-  const diaryCreation = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const diaryCreation = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validation
+    if (!date || !visibility || !weather || !comment) {
+      setErrorMessage("Please fill out all fields.");
+      return;
+    }
 
     const newDiary = {
       date,
-      visibility: Visibility[visibility as keyof typeof Visibility],
-      weather: Weather[weather as keyof typeof Weather],
+      visibility,
+      weather,
       comment,
     };
 
-    createDiary(newDiary)
-      .then((data: DiaryEntry) => {
-        setDiaries((prevDiaries) => [...prevDiaries, data]);
-        setDate("");
-        setVisibility("");
-        setWeather("");
-        setComment("");
-        setErrorMessage("");
-      })
-      .catch((error) => {
-        console.error("Error creating diary:", error);
-        setErrorMessage("Failed to create the diary entry. Please try again.");
-      });
+    console.log("Sending the following data:", newDiary);
+
+    try {
+      const data = await createDiary(newDiary);
+      setDiaries((prevDiaries) => [...prevDiaries, data]);
+      setDate("");
+      setVisibility("");
+      setWeather("");
+      setComment("");
+      setErrorMessage("");
+    } catch (error) {
+      console.error("Error creating diary:", error);
+      setErrorMessage("Failed to create the diary entry. Please try again.");
+    }
   };
 
   return (
     <div>
       <h1>Add new entry</h1>
       <Notification message={errorMessage} />
-      <form>
+      <form onSubmit={diaryCreation}>
         <div>
-          date <input value={date} onChange={(e) => setDate(e.target.value)} />
-        </div>
-        <div>
-          visibility{" "}
+          <label>Date</label>
           <input
-            value={visibility}
-            onChange={(e) => setVisibility(e.target.value)}
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
           />
         </div>
+
         <div>
-          weather{" "}
-          <input value={weather} onChange={(e) => setWeather(e.target.value)} />
+          <label>Visibility</label>
+          {Object.values(Visibility).map((vis) => (
+            <div key={vis}>
+              <label>
+                <input
+                  type="radio"
+                  value={vis}
+                  checked={visibility === vis}
+                  onChange={() => setVisibility(vis)}
+                />
+                {vis}
+              </label>
+            </div>
+          ))}
         </div>
+
         <div>
-          comment{" "}
-          <input value={comment} onChange={(e) => setComment(e.target.value)} />
+          <label>Weather</label>
+          {Object.values(Weather).map((w) => (
+            <div key={w}>
+              <label>
+                <input
+                  type="radio"
+                  value={w}
+                  checked={weather === w}
+                  onChange={() => setWeather(w)}
+                />
+                {w}
+              </label>
+            </div>
+          ))}
         </div>
-        <button type="submit" onClick={diaryCreation}>
-          add
-        </button>
+
+        <div>
+          <label>Comment</label>
+          <input
+            type="text"
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+          />
+        </div>
+
+        <button type="submit">Add</button>
       </form>
 
       <DiaryEnteries entries={diaries} />
