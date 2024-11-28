@@ -1,11 +1,7 @@
-import { courseName } from "../types";
-
-interface HeaderProps {
-  courseName: courseName;
-}
+import { HeaderProps } from "../types";
 
 const Header = ({ courseName }: HeaderProps) => {
-  return <div>{courseName.name}</div>;
+  return <h1>{courseName.name}</h1>;
 };
 
 export default Header;

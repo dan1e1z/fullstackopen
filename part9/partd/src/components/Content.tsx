@@ -1,16 +1,18 @@
-import { courseParts } from "../types";
-
-interface ContentProps {
-  courseParts: courseParts;  
-}
+import { ContentProps } from "../types";
 
 const Content = ({ courseParts }: ContentProps) => {
   return (
     <div>
       {courseParts.map((part, index) => (
-        <p key={index}>
-          {part.name} {part.exerciseCount}
-        </p>
+        <div key={index}>
+          <h3>{part.name}</h3>
+          <p>Exercises: {part.exerciseCount}</p>
+          {part.kind === "basic" && <p>{part.description}</p>}
+          {part.kind === "background" && (
+            <p>Background material: {part.backgroundMaterial}</p>
+          )}
+          {part.kind === "special" && <p>{part.requirements}</p>}
+        </div>
       ))}
     </div>
   );
