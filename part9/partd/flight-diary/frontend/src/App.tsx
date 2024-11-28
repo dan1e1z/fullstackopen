@@ -10,7 +10,7 @@ function App() {
   const [visibility, setVisibility] = useState("");
   const [weather, setWeather] = useState("");
   const [comment, setComment] = useState("");
-  const [errorMessage, setErrorMessage] = useState(""); // State for error message
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     getAllDiaries().then((data) => {
@@ -37,7 +37,7 @@ function App() {
         setVisibility("");
         setWeather("");
         setComment("");
-        setErrorMessage(""); // Clear error message if creation succeeds
+        setErrorMessage("");
       })
       .catch((error) => {
         console.error("Error creating diary:", error);
@@ -48,10 +48,7 @@ function App() {
   return (
     <div>
       <h1>Add new entry</h1>
-
-      {/* Show error notification if there's an error */}
       <Notification message={errorMessage} />
-
       <form>
         <div>
           date <input value={date} onChange={(e) => setDate(e.target.value)} />
