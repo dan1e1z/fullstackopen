@@ -1,6 +1,7 @@
 import express from "express";
 import patientsService from "../services/patientsService";
 import { NonSensitivePatientEntry, Patient, NewPatientEntry } from "../types";
+import { Request, Response } from "express";
 
 const router = express.Router();
 
@@ -18,9 +19,16 @@ router.post("/", (req, res) => {
     ssn,
     gender,
     occupation,
+    entries: []
   };
   const addedPatient = patientsService.addPatient(newPatientEntry);
   res.json(addedPatient);
+});
+
+router.get("/:id", (req: Request<{ id: string }>, res: Response) => {
+  const id = req.params.id;
+  const data = patientsService.getPatient(id); 
+  data ? res.json(data) : res.status(404).json({ error: "Patient not found" });
 });
 
 router.post("/", (_req, res) => {
