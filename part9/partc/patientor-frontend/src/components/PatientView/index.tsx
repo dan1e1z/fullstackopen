@@ -26,14 +26,29 @@ console.log("PatientView")
     return <div>Not found</div>;
   }
   return (
-    <div>
-      <h1>{patient.name}</h1>
-      <p>SSN: {patient.ssn}</p>
-      <p>Occupation: {patient.occupation}</p>
-      <p>Gender: {patient.gender}</p>
-      <p>Date of Birth: {patient.dateOfBirth}</p>
-      <p>Entries: {patient.entries.length}</p>
+<div>
+  <h1>{patient.name}</h1>
+  <p>SSN: {patient.ssn}</p>
+  <p>Occupation: {patient.occupation}</p>
+  <p>Gender: {patient.gender}</p>
+  <p>Date of Birth: {patient.dateOfBirth}</p>
+  <p>Number of Entries: {patient.entries.length}</p>
+  {patient.entries.map((entry, index) => (
+    <div key={index}>
+      <p>
+        Date: {entry.date} <br />
+        Description: {entry.description}
+      </p>
+      {entry.diagnosisCodes && (
+        <ul>
+          {entry.diagnosisCodes.map((code, i) => (
+            <li key={i}>{code}</li>
+          ))}
+        </ul>
+      )}
     </div>
+  ))}
+</div>
   );
 };
 
