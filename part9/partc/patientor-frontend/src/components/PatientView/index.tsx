@@ -4,16 +4,20 @@ import { Patient } from "../../types";
 import patientService from "../../services/patients";
 
 const PatientView = () => {
+
   const match = useMatch("/patients/:id");
   const [patient, setPatient] = useState<Patient>();
+console.log("PatientView")
 
   useEffect(() => {
     const fetchPatient = async () => {
+            console.log('first', match?.params.id)
       const patient = await patientService.getPatient(
         match?.params.id as string,
       );
-      setPatient(patient);
+
       console.log(patient);
+      setPatient(patient);
     };
     fetchPatient();
   }, [match]);
